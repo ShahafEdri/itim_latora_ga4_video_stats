@@ -1,3 +1,21 @@
+function getAnonymousUserId() {
+  const key = 'anon_user_id__itim_latora';
+  let id = localStorage.getItem(key);
+  if (!id) {
+    id = 'anon-' + crypto.randomUUID(); // Or use Date.now() + Math.random() if older browser
+    localStorage.setItem(key, id);
+  }
+  return id;
+}
+
+// {% if request.user.is_authenticated %}
+//   const userId = "{{ request.user.id }}";
+// {% else %}
+  const userId = getAnonymousUserId();
+// {% endif %}
+
+gtag('set', { user_id: userId });
+
 document.addEventListener('DOMContentLoaded', function () {
   function setupMediaTracking(mediaElement, type) {
     const sourceElement = mediaElement.querySelector('source');
@@ -34,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     mediaElement.addEventListener('timeupdate', () => {
       const percent = (mediaElement.currentTime / mediaElement.duration) * 100;
-      [25, 50, 75].forEach(milestone => {
+      [25, 50, 75, 90].forEach(milestone => {
         if (percent >= milestone && !milestones[milestone]) {
           gtag('event', `${type}_progress`, {
             [`${type}_title`]: title,
@@ -50,17 +68,14 @@ document.addEventListener('DOMContentLoaded', function () {
       interval = null;
 
       gtag('event', `${type}_complete`, { [`${type}_title`]: title });
-      gtag('event', `${type}_watch_time`, {
-        [`${type}_title`]: title,
-        seconds_watched: watchTime
-      });
     });
-
+    
     window.addEventListener('beforeunload', () => {
       if (watchTime > 0) {
         gtag('event', `${type}_watch_time`, {
           [`${type}_title`]: title,
-          seconds_watched: watchTime
+          seconds_watched: watchTime,
+          duration: Math.floor(mediaElement.duration),
         });
       }
     });
