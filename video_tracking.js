@@ -1,23 +1,5 @@
 //video_tracking.js
 
-function getAnonymousUserId() {
-  const key = 'itim_latora_anon_user_id';
-  let id = localStorage.getItem(key);
-  if (!id) {
-    id = 'anon-' + crypto.randomUUID(); // Or use Date.now() + Math.random() if older browser
-    localStorage.setItem(key, id);
-  }
-  return id;
-}
-
-// {% if request.user.is_authenticated %}
-//   const userId = "{{ request.user.id }}";
-// {% else %}
-  const userId = getAnonymousUserId();
-// {% endif %}
-
-gtag('set', { custom_user_id: userId });
-
 document.addEventListener('DOMContentLoaded', function () {
   function setupMediaTracking(mediaElement, type) {
     const sourceElement = mediaElement.querySelector('source');
