@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const rawFileName = src ? decodeURIComponent(src.split('/').pop().split('.')[0]) : `שיעור ללא שם`;
     const title = rawFileName.replace(/[-_]/g, ' ');
 
-    const milestones = {25: false, 50: false, 75: false, 90: false};
+    const milestones = {25: false, 50: false, 75: false, 90: false, 100: false};
     let watchTime = 0;
     let interval;
 
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     mediaElement.addEventListener('timeupdate', () => {
       const percent = (mediaElement.currentTime / mediaElement.duration) * 100;
-      [25, 50, 75, 90].forEach(milestone => {
+      keys(milestones).forEach(milestone => {
         if (percent >= milestone && !milestones[milestone]) {
           gtag('event', `${type}_progress`, {
             [`${type}_title`]: title,
