@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const rawFileName = src ? decodeURIComponent(src.split('/').pop().split('.')[0]) : `שיעור ללא שם`;
     const title = rawFileName.replace(/[-_]/g, ' ');
 
-    const milestones = {25: false, 50: false, 75: false, 90: false, 100: false};
+    const milestones = { 25: false, 50: false, 75: false, 90: false, 100: false };
     let watchTime = 0;
     let interval;
 
@@ -36,23 +36,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
     mediaElement.addEventListener('timeupdate', () => {
       const percent = (mediaElement.currentTime / mediaElement.duration) * 100;
-      keys(milestones).forEach(milestone => {
-        if (percent >= milestone && !milestones[milestone]) {
+      // Iterate over the keys of the milestones object
+      Object.keys(milestones).forEach(milestoneKey => {
+        // Convert the string key back to a number for comparison
+        const milestone = parseInt(milestoneKey);
+
+        if (percent >= milestone && !milestones[milestoneKey]) {
           gtag('event', `${type}_progress`, {
             [`${type}_title`]: title,
-            progress: milestone + '%'
+            progress: milestone + '%' // Use the numeric milestone for the event parameter
           });
-          milestones[milestone] = true;
+          milestones[milestoneKey] = true; // Mark as true using the string key
         }
       });
     });
+
 
     mediaElement.addEventListener('ended', () => {
       clearInterval(interval);
       interval = null;
       gtag('event', `${type}_complete`, { [`${type}_title`]: title });
     });
-    
+
     window.addEventListener('beforeunload', () => {
       if (watchTime > 0) {
         gtag('event', `${type}_watch_time`, {
